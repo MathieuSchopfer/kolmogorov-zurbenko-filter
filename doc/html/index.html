@@ -1,0 +1,380 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>kolzur_filter module &#8212; Kolmogorov-Zurkbenko filter  documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Kolmogorov-Zurkbenko filter  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">kolzur_filter module</a><ul>
+<li><a class="reference internal" href="#summary">Summary</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-kolzur_filter">Introduction</a></li>
+<li><a class="reference internal" href="#id1">Functions</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="kolzur-filter-module">
+<h1>kolzur_filter module<a class="headerlink" href="#kolzur-filter-module" title="Permalink to this headline">¶</a></h1>
+<p>Version : 2017-03-31</p>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#kolzur_filter._kz_coeffs" title="kolzur_filter._kz_coeffs"><code class="xref py py-obj docutils literal"><span class="pre">_kz_coeffs</span></code></a>(m,&nbsp;k)</td>
+<td>Calculate coefficients of the Kolmogorov–Zurbenko filter</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#kolzur_filter._kz_prod" title="kolzur_filter._kz_prod"><code class="xref py py-obj docutils literal"><span class="pre">_kz_prod</span></code></a>(data,&nbsp;coef,&nbsp;m,&nbsp;k[,&nbsp;t])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#kolzur_filter._kz_sum" title="kolzur_filter._kz_sum"><code class="xref py py-obj docutils literal"><span class="pre">_kz_sum</span></code></a>(data,&nbsp;coef)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#kolzur_filter.kz_filter" title="kolzur_filter.kz_filter"><code class="xref py py-obj docutils literal"><span class="pre">kz_filter</span></code></a>(data,&nbsp;m,&nbsp;k)</td>
+<td>Kolmogorov-Zurbenko fitler</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#kolzur_filter.kzft" title="kolzur_filter.kzft"><code class="xref py py-obj docutils literal"><span class="pre">kzft</span></code></a>(data,&nbsp;nu,&nbsp;m,&nbsp;k[,&nbsp;t,&nbsp;dt])</td>
+<td>Kolmogorov-Zurbenko Fourier transform filter</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#kolzur_filter.kzp" title="kolzur_filter.kzp"><code class="xref py py-obj docutils literal"><span class="pre">kzp</span></code></a>(data,&nbsp;nu,&nbsp;m,&nbsp;k[,&nbsp;dt])</td>
+<td>Kolmogorov-Zurbenko periodogram</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#kolzur_filter.sliding_window" title="kolzur_filter.sliding_window"><code class="xref py py-obj docutils literal"><span class="pre">sliding_window</span></code></a>(arr,&nbsp;window)</td>
+<td>Apply a sliding window on a numpy array.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="module-kolzur_filter">
+<span id="introduction"></span><h2>Introduction<a class="headerlink" href="#module-kolzur_filter" title="Permalink to this headline">¶</a></h2>
+<p>Numpy implementation of the Kolmogorov-Zurbenko filter</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Zurbenko_filter">https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Zurbenko_filter</a></p>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Implement the KZ adaptive filter.</p>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>Functions<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="kolzur_filter._kz_coeffs">
+<code class="descname">_kz_coeffs</code><span class="sig-paren">(</span><em>m</em>, <em>k</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kolzur_filter.html#_kz_coeffs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kolzur_filter._kz_coeffs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate coefficients of the Kolmogorov–Zurbenko filter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></a> of size <cite>k*(m-1)+1</cite></td>
+</tr>
+</tbody>
+</table>
+<p>This functions returns the normlalised coefficients <img class="math" src="_images/math/525914e56cd97b060c4b34581e9f90e65c22bff9.png" alt="a_s^{m,k}/m^k"/>.</p>
+<p class="rubric">Coefficients definition</p>
+<p>A definition of the Kolmogorov–Zurbenko filter coefficients is provided in <a class="reference external" href="http://onlinelibrary.wiley.com/doi/10.1002/wics.71/pdf">this article</a>. Coefficients <img class="math" src="_images/math/7a74708f765b8430349f5942fdeb161e30d94fce.png" alt="a_s^{m,k}"/>  are
+the coefficients of the polynomial function:</p>
+<div class="math">
+<p><img src="_images/math/fba33061a6ddf5083c3ecaf662a8e1e93ef86c2c.png" alt="(1 + z + \cdots + z^{m-1})^k = \sum_{s=-k(m-1)/2}^{k(m-1)/2} a_s^{m,k} \cdot z^{s+k(m-1)/2}"/></p>
+</div><p>The <img class="math" src="_images/math/7a74708f765b8430349f5942fdeb161e30d94fce.png" alt="a_s^{m,k}"/> coefficients are calculated by iterating over <img class="math" src="_images/math/0b7c1e16a3a8a849bb8ffdcdbf86f65fd1f30438.png" alt="k"/>.</p>
+<p class="rubric">Calculation example for m=5 and k=3</p>
+<p>Let us define the polynomial function</p>
+<div class="math">
+<p><img src="_images/math/a5ab784d83f3cc5f7da13bb87d97caf534c14a32.png" alt="P(z) = 1 + z + z^2 + z^3 + z^4."/></p>
+</div><p>At <img class="math" src="_images/math/e0c697f0cf4a4c09fb151f725bdc6e65c3be447c.png" alt="k=1"/>, the coefficients <img class="math" src="_images/math/c9e88d93f29c2fa3c1e685f7c680713ee7522c45.png" alt="a_s^{m,k}=a_s^{1,5}"/> are that of <img class="math" src="_images/math/22a1d459744ae4588145b2831fd641265d4b4271.png" alt="P(z)"/>,</p>
+<div class="math">
+<p><img src="_images/math/861ee5b0342567128203d1a930ff0d8e304ada01.png" alt="\left(\begin{matrix}
+1 &amp; 1 &amp; 1 &amp; 1 &amp; 1
+\end{matrix}\right)."/></p>
+</div><p>At <img class="math" src="_images/math/263c32d3889f456b638309da71bc3eb73a9156ed.png" alt="k=2"/>, we want to calculate the coefficients of polynomial function <img class="math" src="_images/math/8528ff61261d1b19c824402ea71b7ec048e02b36.png" alt="P(z)\cdot P(z)"/>, of degree 8.
+First, we calculate the polynomial functions <img class="math" src="_images/math/22a1d459744ae4588145b2831fd641265d4b4271.png" alt="P(z)"/>, <img class="math" src="_images/math/e51794b1b874e1dfe64633106429610c12643d6e.png" alt="zP(z)"/>, <img class="math" src="_images/math/f7181ad6eb02f72e295af5397ef6f62ceb812d2c.png" alt="z^2P(z)"/> and <img class="math" src="_images/math/cc7509379702fed5c7560e3d6d14ed80a2bd858a.png" alt="z^3P(z)"/> and
+then sum them.</p>
+<p>Let us represent the coefficients of these functions in a table, with monomial elements in columns:</p>
+<div class="math">
+<p><img src="_images/math/e4a4490a9230041b22bec7d385585f538de1c006.png" alt="\begin{array}{r|ccccccccc}
+&amp; z^0 &amp; z^1 &amp; z^2 &amp; z^3 &amp; z^4 &amp; z^5 &amp; z^6 &amp; z^7 &amp; z^8 \\
+\hline
+P(z)    &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+zP(z)   &amp; 0 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\
+z^2P(z) &amp; 0 &amp; 0 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 0 &amp; 0 \\
+z^3P(z) &amp; 0 &amp; 0 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 0 \\
+z^4P(z) &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 \\
+\hline
+\mathrm{Sum} &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 4 &amp; 3 &amp; 2 &amp; 1
+\end{array}"/></p>
+</div><p>At <img class="math" src="_images/math/a60f3b4a3531f65bb5a1b11f886d291ff8ccaef5.png" alt="k=3"/>, we want to calculate the coefficients of polynomial function <img class="math" src="_images/math/65fcbef88196f733188476b8a13c6a39e0111711.png" alt="P(z)\cdot P(z)^2"/>, of degree
+12. We use the same representation:</p>
+<div class="math">
+<p><img src="_images/math/f2d7dea810670fefcc7d74fd7b020bc0e78d0328.png" alt="\begin{array}{r|ccccccccccccc}
+&amp; z^0 &amp; z^1 &amp; z^2 &amp; z^3 &amp; z^4 &amp; z^5 &amp; z^6 &amp; z^7 &amp; z^8 &amp; z^9 &amp; z^{10} &amp; z^{11} &amp; z^{12} \\
+\hline
+P(z)^2    &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 4 &amp; 3 &amp; 2 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+zP(z)^2   &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 4 &amp; 3 &amp; 2 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\
+z^2P(z)^2 &amp; 0 &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 4 &amp; 3 &amp; 2 &amp; 1 &amp; 0 &amp; 0 \\
+z^3P(z)^2 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 4 &amp; 3 &amp; 2 &amp; 1 &amp; 0 \\
+z^4P(z)^2 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 4 &amp; 3 &amp; 2 &amp; 1 \\
+\hline
+\mathrm{Sum} &amp; 1 &amp; 3 &amp; 6 &amp; 10 &amp; 15 &amp; 18 &amp; 19 &amp; 18 &amp; 15 &amp; 10 &amp; 6 &amp; 3 &amp; 1
+\end{array}"/></p>
+</div><div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">_kz_coeffs</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+<span class="go">[ 0.33333333  0.33333333  0.33333333]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">_kz_coeffs</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">*</span><span class="mi">3</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">[ 1.  2.  3.  2.  1.]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">_kz_coeffs</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">*</span><span class="mi">5</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">[  1.   3.   6.  10.  15.  18.  19.  18.  15.  10.   6.   3.   1.]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="kolzur_filter._kz_prod">
+<code class="descname">_kz_prod</code><span class="sig-paren">(</span><em>data</em>, <em>coef</em>, <em>m</em>, <em>k</em>, <em>t=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kolzur_filter.html#_kz_prod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kolzur_filter._kz_prod" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="kolzur_filter._kz_sum">
+<code class="descname">_kz_sum</code><span class="sig-paren">(</span><em>data</em>, <em>coef</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kolzur_filter.html#_kz_sum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kolzur_filter._kz_sum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="kolzur_filter.kz_filter">
+<code class="descname">kz_filter</code><span class="sig-paren">(</span><em>data</em>, <em>m</em>, <em>k</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kolzur_filter.html#kz_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kolzur_filter.kz_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kolmogorov-Zurbenko fitler</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><em>numpy.ndarray</em></a>) &#8211; A 1-dimensional numpy array of size <cite>N</cite>. Any missing value should be set to <code class="docutils literal"><span class="pre">np.nan</span></code>.</li>
+<li><strong>m</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) &#8211; Filter window width.</li>
+<li><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) &#8211; Filter degree.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></a> of size <cite>N-k*(m-1)</cite></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Given a time series <img class="math" src="_images/math/5d63a2fb6f115135ba2de1ecafe969216f8b9cf2.png" alt="X_t, t \in \{0, 1, \cdots, N-1\}"/>, the Kolmogorov-Zurbenko fitler is defined for
+<img class="math" src="_images/math/b18a83008f3a5cda739855aaaf8d5f46cc0bbec5.png" alt="t \in \{\frac{k(m-1)}{2}, \cdots, N-1-\frac{k(m-1)}{2}\}"/> by</p>
+<div class="math">
+<p><img src="_images/math/22a08f05fa61bc5e9d12825c1dd0432526f7458d.png" alt="KZ_{m,k}[X_t] = \sum_{s=-k(m-1)/2}^{k(m-1)/2} \frac{a_s^{m,k}}{m^k} \cdot X_{t+s}"/></p>
+</div><p>Definition of coefficients <img class="math" src="_images/math/7a74708f765b8430349f5942fdeb161e30d94fce.png" alt="a_s^{m,k}"/> is given in <a class="reference internal" href="#kolzur_filter._kz_coeffs" title="kolzur_filter._kz_coeffs"><code class="xref py py-func docutils literal"><span class="pre">_kz_coeffs()</span></code></a>.</p>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="kolzur_filter.kzft">
+<code class="descname">kzft</code><span class="sig-paren">(</span><em>data</em>, <em>nu</em>, <em>m</em>, <em>k</em>, <em>t=None</em>, <em>dt=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kolzur_filter.html#kzft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kolzur_filter.kzft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kolmogorov-Zurbenko Fourier transform filter</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><em>numpy.ndarray</em></a>) &#8211; A 1-dimensional numpy array of size <cite>N</cite>. Any missing value should be set to <code class="docutils literal"><span class="pre">np.nan</span></code>.</li>
+<li><strong>nu</strong> (<em>list-like</em>) &#8211; Frequencies, length <cite>Nnu</cite>.</li>
+<li><strong>m</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) &#8211; Filter window width.</li>
+<li><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) &#8211; Filter degree.</li>
+<li><strong>t</strong> (<em>list-like</em>) &#8211; Indices where to calculate the KZFT, of length <cite>Nt</cite>. If <cite>None</cite>, calculate over the whole
+calculable range.</li>
+<li><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) &#8211; Time step, if not 1.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></a> of shape <cite>(Nnu, Nt)</cite> or <cite>(Nnu, N-k*(m-1))</cite> if <cite>t</cite> is <cite>None</cite>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Given a time series <img class="math" src="_images/math/5d63a2fb6f115135ba2de1ecafe969216f8b9cf2.png" alt="X_t, t \in \{0, 1, \cdots, N-1\}"/>, the Kolmogorov-Zurbenko Fourier transform filter
+is defined for <img class="math" src="_images/math/b18a83008f3a5cda739855aaaf8d5f46cc0bbec5.png" alt="t \in \{\frac{k(m-1)}{2}, \cdots, N-1-\frac{k(m-1)}{2}\}"/> by</p>
+<div class="math">
+<p><img src="_images/math/e50e378dcb3f282aa12ac69cc45be40f388a83f9.png" alt="KZFT_{m,k,\nu}[X_t] = \sum_{s=-k(m-1)/2}^{k(m-1)/2} \frac{a_s^{m,k}}{m^k} \cdot X_{t+s} \cdot
+e^{-2\pi i\nu s}"/></p>
+</div></dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="kolzur_filter.kzp">
+<code class="descname">kzp</code><span class="sig-paren">(</span><em>data</em>, <em>nu</em>, <em>m</em>, <em>k</em>, <em>dt=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kolzur_filter.html#kzp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kolzur_filter.kzp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kolmogorov-Zurbenko periodogram</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><em>numpy.ndarray</em></a>) &#8211; A 1-dimensional numpy array of size <cite>N</cite>. Any missing value should be set to <code class="docutils literal"><span class="pre">np.nan</span></code>.</li>
+<li><strong>nu</strong> (<em>list-like</em>) &#8211; Frequencies, length <cite>Nnu</cite>.</li>
+<li><strong>m</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) &#8211; Filter window width.</li>
+<li><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) &#8211; Filter degree.</li>
+<li><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) &#8211; Time step, if not 1.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></a> os size <cite>Nnu</cite>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Given a time series <img class="math" src="_images/math/5d63a2fb6f115135ba2de1ecafe969216f8b9cf2.png" alt="X_t, t \in \{0, 1, \cdots, N-1\}"/>, the Kolmogorov-Zurbenko periodogram is defined by</p>
+<div class="math">
+<p><img src="_images/math/c721c18753572c8287facf0910e04b2103789170.png" alt="KZP_{m,k}(\nu) = \sqrt{\sum_{h=0}^{T-1} \lvert 2 \cdot  KZFT_{m,k,\nu}[X_{hL+k(m-1)/2}] \rvert ^2}"/></p>
+</div><p>where <img class="math" src="_images/math/0e7b82e77e309726ad21999bb9dd1b4b1c094c07.png" alt="L=(N-w)/(T-1)"/> is the distance between the beginnings of two successive intervals, <img class="math" src="_images/math/ecd1ee2a1cd226b40c37e079aca62398d4b774f5.png" alt="w"/> being the
+calculation window width of the <a class="reference internal" href="#kolzur_filter.kzft" title="kolzur_filter.kzft"><code class="xref py py-func docutils literal"><span class="pre">kzft()</span></code></a> and <img class="math" src="_images/math/f2d283a2071f9d043c9e0b0f794a8880fa0d3ce9.png" alt="T"/> the number of intervals.</p>
+<p>The assumption was made that <img class="math" src="_images/math/2acf8b321a096c85285f38d1198053f06a0fa7c3.png" alt="L \ll w \ll N"/>, implying that the intervals overlap.</p>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="kolzur_filter.sliding_window">
+<code class="descname">sliding_window</code><span class="sig-paren">(</span><em>arr</em>, <em>window</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kolzur_filter.html#sliding_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kolzur_filter.sliding_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply a sliding window on a numpy array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>arr</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><em>numpy.ndarray</em></a>) &#8211; An array of shape <cite>(n1, ..., nN)</cite></li>
+<li><strong>window</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) &#8211; Window size.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></a> of shape <cite>(n1, ..., nN-window+1, window)</cite>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">Source <a class="reference external" href="http://stackoverflow.com/a/6811241/3849212">http://stackoverflow.com/a/6811241/3849212</a></p>
+</div>
+<p>Usage (1D):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arrs</span> <span class="o">=</span> <span class="n">sliding_window</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arrs</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(6, 5)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">arrs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">[0 1 2 3 4]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">arrs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="go">[1 2 3 4 5]</span>
+</pre></div>
+</div>
+<p>Usage (2D):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arrs</span> <span class="o">=</span> <span class="n">sliding_window</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arrs</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(2, 6, 5)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">arrs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="go">[0 1 2 3 4]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">arrs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="go">[1 2 3 4 5]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Kolmogorov-Zurkbenko filter  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright Mathieu Schopfer 2017.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>kolzur_filter &#8212; Kolmogorov-Zurkbenko filter  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Kolmogorov-Zurkbenko filter  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for kolzur_filter</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># kolzur_filter module - NumPy implementation of the Kolmogorov-Zurbenko filter</span>
+<span class="c1"># Copyright (C) 2017  Mathieu Schopfer</span>
+<span class="c1">#</span>
+<span class="c1"># This program is free software: you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU General Public License as published by</span>
+<span class="c1"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># This program is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+
+<span class="sd">&quot;&quot;&quot;Numpy implementation of the Kolmogorov-Zurbenko filter</span>
+
+<span class="sd">https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Zurbenko_filter</span>
+
+<span class="sd">.. todo:: Implement the KZ adaptive filter.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Mathieu Schopfer&#39;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;2017-03-31&#39;</span>
+
+
+<div class="viewcode-block" id="sliding_window"><a class="viewcode-back" href="../index.html#kolzur_filter.sliding_window">[docs]</a><span class="k">def</span> <span class="nf">sliding_window</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Apply a sliding window on a numpy array.</span>
+
+<span class="sd">    :param numpy.ndarray arr: An array of shape `(n1, ..., nN)`</span>
+<span class="sd">    :param int window: Window size.</span>
+<span class="sd">    :return: A :class:`numpy.ndarray` of shape `(n1, ..., nN-window+1, window)`.</span>
+
+<span class="sd">    .. seealso:: Source http://stackoverflow.com/a/6811241/3849212</span>
+
+<span class="sd">    Usage (1D):</span>
+
+<span class="sd">    .. doctest::</span>
+
+<span class="sd">        &gt;&gt;&gt; arr = np.arange(10)</span>
+<span class="sd">        &gt;&gt;&gt; arrs = sliding_window(arr, 5)</span>
+<span class="sd">        &gt;&gt;&gt; arrs.shape</span>
+<span class="sd">        (6, 5)</span>
+<span class="sd">        &gt;&gt;&gt; print(arrs[0])</span>
+<span class="sd">        [0 1 2 3 4]</span>
+<span class="sd">        &gt;&gt;&gt; print(arrs[1])</span>
+<span class="sd">        [1 2 3 4 5]</span>
+
+<span class="sd">    Usage (2D):</span>
+
+<span class="sd">    .. doctest::</span>
+
+<span class="sd">        &gt;&gt;&gt; arr = np.arange(20).reshape(2, 10)</span>
+<span class="sd">        &gt;&gt;&gt; arrs = sliding_window(arr, 5)</span>
+<span class="sd">        &gt;&gt;&gt; arrs.shape</span>
+<span class="sd">        (2, 6, 5)</span>
+<span class="sd">        &gt;&gt;&gt; print(arrs[0, 0])</span>
+<span class="sd">        [0 1 2 3 4]</span>
+<span class="sd">        &gt;&gt;&gt; print(arrs[0, 1])</span>
+<span class="sd">        [1 2 3 4 5]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Advanced numpy tricks</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">window</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span>
+    <span class="n">strides</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">strides</span> <span class="o">+</span> <span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">stride_tricks</span><span class="o">.</span><span class="n">as_strided</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="n">strides</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_kz_coeffs"><a class="viewcode-back" href="../index.html#kolzur_filter._kz_coeffs">[docs]</a><span class="k">def</span> <span class="nf">_kz_coeffs</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate coefficients of the Kolmogorov–Zurbenko filter</span>
+
+<span class="sd">    :return: A :class:`numpy.ndarray` of size `k*(m-1)+1`</span>
+
+<span class="sd">    This functions returns the normlalised coefficients :math:`a_s^{m,k}/m^k`.</span>
+
+<span class="sd">    .. rubric:: Coefficients definition</span>
+
+<span class="sd">    A definition of the Kolmogorov–Zurbenko filter coefficients is provided in `this article</span>
+<span class="sd">    &lt;http://onlinelibrary.wiley.com/doi/10.1002/wics.71/pdf&gt;`_. Coefficients :math:`a_s^{m,k}`  are</span>
+<span class="sd">    the coefficients of the polynomial function:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        (1 + z + \\cdots + z^{m-1})^k = \\sum_{s=-k(m-1)/2}^{k(m-1)/2} a_s^{m,k} \\cdot z^{s+k(m-1)/2}</span>
+
+<span class="sd">    The :math:`a_s^{m,k}` coefficients are calculated by iterating over :math:`k`.</span>
+
+<span class="sd">    .. rubric:: Calculation example for m=5 and k=3</span>
+
+<span class="sd">    Let us define the polynomial function</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        P(z) = 1 + z + z^2 + z^3 + z^4.</span>
+
+<span class="sd">    At :math:`k=1`, the coefficients :math:`a_s^{m,k}=a_s^{1,5}` are that of :math:`P(z)`, </span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \\left(\\begin{matrix}</span>
+<span class="sd">        1 &amp; 1 &amp; 1 &amp; 1 &amp; 1</span>
+<span class="sd">        \\end{matrix}\\right).</span>
+
+<span class="sd">    At :math:`k=2`, we want to calculate the coefficients of polynomial function :math:`P(z)\\cdot P(z)`, of degree 8.</span>
+<span class="sd">    First, we calculate the polynomial functions :math:`P(z)`, :math:`zP(z)`, :math:`z^2P(z)` and :math:`z^3P(z)` and</span>
+<span class="sd">    then sum them.</span>
+
+<span class="sd">    Let us represent the coefficients of these functions in a table, with monomial elements in columns:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \\begin{array}{r|ccccccccc}</span>
+<span class="sd">        &amp; z^0 &amp; z^1 &amp; z^2 &amp; z^3 &amp; z^4 &amp; z^5 &amp; z^6 &amp; z^7 &amp; z^8 \\\\</span>
+<span class="sd">        \\hline</span>
+<span class="sd">        P(z)    &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\\\</span>
+<span class="sd">        zP(z)   &amp; 0 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\\\</span>
+<span class="sd">        z^2P(z) &amp; 0 &amp; 0 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 0 &amp; 0 \\\\</span>
+<span class="sd">        z^3P(z) &amp; 0 &amp; 0 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 0 \\\\</span>
+<span class="sd">        z^4P(z) &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 \\\\</span>
+<span class="sd">        \\hline</span>
+<span class="sd">        \\mathrm{Sum} &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 4 &amp; 3 &amp; 2 &amp; 1</span>
+<span class="sd">        \\end{array}</span>
+
+<span class="sd">    At :math:`k=3`, we want to calculate the coefficients of polynomial function :math:`P(z)\\cdot P(z)^2`, of degree</span>
+<span class="sd">    12. We use the same representation:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \\begin{array}{r|ccccccccccccc}</span>
+<span class="sd">        &amp; z^0 &amp; z^1 &amp; z^2 &amp; z^3 &amp; z^4 &amp; z^5 &amp; z^6 &amp; z^7 &amp; z^8 &amp; z^9 &amp; z^{10} &amp; z^{11} &amp; z^{12} \\\\</span>
+<span class="sd">        \\hline</span>
+<span class="sd">        P(z)^2    &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 4 &amp; 3 &amp; 2 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\\\</span>
+<span class="sd">        zP(z)^2   &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 4 &amp; 3 &amp; 2 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\\\</span>
+<span class="sd">        z^2P(z)^2 &amp; 0 &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 4 &amp; 3 &amp; 2 &amp; 1 &amp; 0 &amp; 0 \\\\</span>
+<span class="sd">        z^3P(z)^2 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 4 &amp; 3 &amp; 2 &amp; 1 &amp; 0 \\\\</span>
+<span class="sd">        z^4P(z)^2 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 4 &amp; 3 &amp; 2 &amp; 1 \\\\</span>
+<span class="sd">        \\hline</span>
+<span class="sd">        \\mathrm{Sum} &amp; 1 &amp; 3 &amp; 6 &amp; 10 &amp; 15 &amp; 18 &amp; 19 &amp; 18 &amp; 15 &amp; 10 &amp; 6 &amp; 3 &amp; 1</span>
+<span class="sd">        \\end{array}</span>
+
+<span class="sd">    .. doctest::</span>
+
+<span class="sd">        &gt;&gt;&gt; c = _kz_coeffs(3, 1)</span>
+<span class="sd">        &gt;&gt;&gt; print(c)</span>
+<span class="sd">        [ 0.33333333  0.33333333  0.33333333]</span>
+<span class="sd">        &gt;&gt;&gt; c = _kz_coeffs(3, 2)</span>
+<span class="sd">        &gt;&gt;&gt; print(c*3**2)</span>
+<span class="sd">        [ 1.  2.  3.  2.  1.]</span>
+<span class="sd">        &gt;&gt;&gt; c = _kz_coeffs(5, 3)</span>
+<span class="sd">        &gt;&gt;&gt; print(c*5**3)</span>
+<span class="sd">        [  1.   3.   6.  10.  15.  18.  19.  18.  15.  10.   6.   3.   1.]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Coefficients at degree one</span>
+    <span class="n">coef</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+    <span class="c1"># Iterate k-1 times over coefficients</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+
+        <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="o">+</span><span class="n">i</span><span class="o">*</span><span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">km</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+            <span class="n">t</span><span class="p">[</span><span class="n">km</span><span class="p">,</span> <span class="n">km</span><span class="p">:</span><span class="n">km</span><span class="o">+</span><span class="n">coef</span><span class="o">.</span><span class="n">size</span><span class="p">]</span> <span class="o">=</span> <span class="n">coef</span>
+
+        <span class="n">coef</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">coef</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">k</span><span class="o">*</span><span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">coef</span><span class="o">/</span><span class="n">m</span><span class="o">**</span><span class="n">k</span></div>
+
+
+<div class="viewcode-block" id="_kz_prod"><a class="viewcode-back" href="../index.html#kolzur_filter._kz_prod">[docs]</a><span class="k">def</span> <span class="nf">_kz_prod</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">coef</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">sliding_window</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">k</span><span class="o">*</span><span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">k</span><span class="o">*</span><span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">coef</span><span class="p">))</span>
+
+    <span class="c1"># Restrict KZ product calculation to provided indices</span>
+    <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">coef</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">data</span><span class="o">*</span><span class="n">coef</span></div>
+
+
+<div class="viewcode-block" id="_kz_sum"><a class="viewcode-back" href="../index.html#kolzur_filter._kz_sum">[docs]</a><span class="k">def</span> <span class="nf">_kz_sum</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">coef</span><span class="p">):</span>
+
+    <span class="n">knan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># Handle missing values if any</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">knan</span><span class="p">):</span>
+
+        <span class="n">coef</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">MaskedArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">coef</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">mask</span><span class="o">=</span><span class="n">knan</span><span class="p">)</span>
+        <span class="n">coef</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">coef</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Restore nan were data are missing</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">coef</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="c1"># Divide by coefficients sum, which may not be 1</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">coef</span><span class="o">.</span><span class="n">mask</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">/</span><span class="n">coef</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="kz_filter"><a class="viewcode-back" href="../index.html#kolzur_filter.kz_filter">[docs]</a><span class="k">def</span> <span class="nf">kz_filter</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Kolmogorov-Zurbenko fitler</span>
+
+<span class="sd">    :param numpy.ndarray data: A 1-dimensional numpy array of size `N`. Any missing value should be set to ``np.nan``.</span>
+<span class="sd">    :param int m: Filter window width.</span>
+<span class="sd">    :param int k: Filter degree.</span>
+<span class="sd">    :return: A :class:`numpy.ndarray` of size `N-k*(m-1)`</span>
+
+<span class="sd">    Given a time series :math:`X_t, t \\in \\{0, 1, \\cdots, N-1\\}`, the Kolmogorov-Zurbenko fitler is defined for</span>
+<span class="sd">    :math:`t \\in \\{\\frac{k(m-1)}{2}, \\cdots, N-1-\\frac{k(m-1)}{2}\\}` by</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        KZ_{m,k}[X_t] = \\sum_{s=-k(m-1)/2}^{k(m-1)/2} \\frac{a_s^{m,k}}{m^k} \\cdot X_{t+s}</span>
+
+<span class="sd">    Definition of coefficients :math:`a_s^{m,k}` is given in :func:`_kz_coeffs`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">coef</span> <span class="o">=</span> <span class="n">_kz_coeffs</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">_kz_prod</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">coef</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_kz_sum</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">coef</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="kzft"><a class="viewcode-back" href="../index.html#kolzur_filter.kzft">[docs]</a><span class="k">def</span> <span class="nf">kzft</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Kolmogorov-Zurbenko Fourier transform filter</span>
+
+<span class="sd">    :param numpy.ndarray data: A 1-dimensional numpy array of size `N`. Any missing value should be set to ``np.nan``.</span>
+<span class="sd">    :param list-like nu: Frequencies, length `Nnu`.</span>
+<span class="sd">    :param int m: Filter window width.</span>
+<span class="sd">    :param int k: Filter degree.</span>
+<span class="sd">    :param list-like t: Indices where to calculate the KZFT, of length `Nt`. If `None`, calculate over the whole</span>
+<span class="sd">      calculable range. </span>
+<span class="sd">    :param float dt: Time step, if not 1.</span>
+<span class="sd">    :return: A :class:`numpy.ndarray` of shape `(Nnu, Nt)` or `(Nnu, N-k*(m-1))` if `t` is `None`.</span>
+
+<span class="sd">    Given a time series :math:`X_t, t \\in \\{0, 1, \\cdots, N-1\\}`, the Kolmogorov-Zurbenko Fourier transform filter</span>
+<span class="sd">    is defined for :math:`t \\in \\{\\frac{k(m-1)}{2}, \\cdots, N-1-\\frac{k(m-1)}{2}\\}` by</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+
+<span class="sd">        KZFT_{m,k,\\nu}[X_t] = \\sum_{s=-k(m-1)/2}^{k(m-1)/2} \\frac{a_s^{m,k}}{m^k} \\cdot X_{t+s} \\cdot</span>
+<span class="sd">        e^{-2\\pi i\\nu s}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dt</span> <span class="o">==</span> <span class="mf">1.</span><span class="p">:</span>
+        <span class="n">nu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">nu</span><span class="p">)</span><span class="o">*</span><span class="n">dt</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">dt</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="o">%</span><span class="mi">2</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">coef</span> <span class="o">=</span> <span class="n">_kz_coeffs</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">_kz_prod</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">coef</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
+
+    <span class="n">nu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">nu</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">k</span><span class="o">*</span><span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">nu</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span><span class="o">*</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span><span class="o">*</span><span class="n">s</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">_kz_sum</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">coef</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="kzp"><a class="viewcode-back" href="../index.html#kolzur_filter.kzp">[docs]</a><span class="k">def</span> <span class="nf">kzp</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Kolmogorov-Zurbenko periodogram</span>
+
+<span class="sd">    :param numpy.ndarray data: A 1-dimensional numpy array of size `N`. Any missing value should be set to ``np.nan``.</span>
+<span class="sd">    :param list-like nu: Frequencies, length `Nnu`.</span>
+<span class="sd">    :param int m: Filter window width.</span>
+<span class="sd">    :param int k: Filter degree.</span>
+<span class="sd">    :param float dt: Time step, if not 1.</span>
+<span class="sd">    :return: A :class:`numpy.ndarray` os size `Nnu`.</span>
+
+<span class="sd">    Given a time series :math:`X_t, t \\in \\{0, 1, \\cdots, N-1\\}`, the Kolmogorov-Zurbenko periodogram is defined by</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        KZP_{m,k}(\\nu) = \\sqrt{\\sum_{h=0}^{T-1} \\lvert 2 \\cdot  KZFT_{m,k,\\nu}[X_{hL+k(m-1)/2}] \\rvert ^2}</span>
+
+<span class="sd">    where :math:`L=(N-w)/(T-1)` is the distance between the beginnings of two successive intervals, :math:`w` being the</span>
+<span class="sd">    calculation window width of the :func:`kzft` and :math:`T` the number of intervals. </span>
+
+<span class="sd">    The assumption was made that :math:`L \\ll w \\ll N`, implying that the intervals overlap.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dt</span> <span class="o">==</span> <span class="mf">1.</span><span class="p">:</span>
+        <span class="n">nu</span> <span class="o">=</span> <span class="n">nu</span><span class="o">*</span><span class="n">dt</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">dt</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="o">%</span><span class="mi">2</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># w is the width of the KZFT. As m is odd, k*(m-1) is always even, so w is always odd.</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">k</span><span class="o">*</span><span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+
+    <span class="c1"># Distance between two successve intervals</span>
+    <span class="c1"># l = (data.size-w)/(nt-1)</span>
+    <span class="c1"># l = int(l)</span>
+
+    <span class="n">l</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">nt</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="o">-</span><span class="n">w</span><span class="p">)</span><span class="o">/</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># print(l, w, data.size)</span>
+
+    <span class="c1"># Calculation indices</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nt</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">l</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">kzft</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">l</span><span class="p">))),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Kolmogorov-Zurkbenko filter  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright Mathieu Schopfer 2017.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+    </div>
+  </body>
+</html>
