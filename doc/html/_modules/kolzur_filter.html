@@ -308,10 +308,14 @@
 <span class="sd">    :param list-like nu: Frequencies, length `Nnu`.</span>
 <span class="sd">    :param int m: Filter window width.</span>
 <span class="sd">    :param int k: Filter degree.</span>
-<span class="sd">    :param list-like t: Indices where to calculate the KZFT, of length `Nt`. If `None`, calculate over the whole</span>
-<span class="sd">      calculable range. </span>
+<span class="sd">    :param list-like t: Calculation indices, of length `Nt`. If provided, KZFT filter will be calculated only for values</span>
+<span class="sd">      ``data[t]``. Note that the KZFT filter can only be calculated for indices in the range [k(m-1)/2, (N-1)-k(m-1)/2].</span>
+<span class="sd">      Trying to calculate the KZFT out of this range will raise an `IndexError`. `None`, calculation will happen over</span>
+<span class="sd">      the whole calculable range.</span>
 <span class="sd">    :param float dt: Time step, if not 1.</span>
-<span class="sd">    :return: A :class:`numpy.ndarray` of shape `(Nnu, Nt)` or `(Nnu, N-k*(m-1))` if `t` is `None`.</span>
+<span class="sd">    :return: A :class:`numpy.ndarray` of shape `(Nnu, Nt)` or `(Nnu, N-k(m-1))` if `t` is `None`.</span>
+<span class="sd">    :raise IndexError: If `t` contains one or more indices out of the calculation range. See documentation of keyword</span>
+<span class="sd">      argument `t`.</span>
 
 <span class="sd">    Given a time series :math:`X_t, t \\in \\{0, 1, \\cdots, N-1\\}`, the Kolmogorov-Zurbenko Fourier transform filter</span>
 <span class="sd">    is defined for :math:`t \\in \\{\\frac{k(m-1)}{2}, \\cdots, N-1-\\frac{k(m-1)}{2}\\}` by</span>
@@ -327,6 +331,14 @@
         <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">dt</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="o">%</span><span class="mi">2</span><span class="p">:</span>
             <span class="n">m</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">k</span><span class="o">*</span><span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">-</span><span class="n">w</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">t</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">w</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;Inpunt calculation indices are out of range. Calculation indices should be in the range &#39;</span>
+                             <span class="s1">&#39;[k*(m-1)/2, (N-1)-k*(m-1)/2], hence [</span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">] in the present case.&#39;</span>
+                             <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">w</span><span class="p">))</span>
 
     <span class="n">coef</span> <span class="o">=</span> <span class="n">_kz_coeffs</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">_kz_prod</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">coef</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
@@ -373,15 +385,11 @@
     <span class="n">w</span> <span class="o">=</span> <span class="n">k</span><span class="o">*</span><span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
 
     <span class="c1"># Distance between two successve intervals</span>
-    <span class="c1"># l = (data.size-w)/(nt-1)</span>
-    <span class="c1"># l = int(l)</span>
-
     <span class="n">l</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span>
     <span class="n">nt</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="o">-</span><span class="n">w</span><span class="p">)</span><span class="o">/</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-    <span class="c1"># print(l, w, data.size)</span>
 
     <span class="c1"># Calculation indices</span>
-    <span class="n">l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nt</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">l</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nt</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">l</span><span class="o">+</span><span class="n">k</span><span class="o">*</span><span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
     <span class="n">l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">kzft</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">l</span><span class="p">))),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span></div>

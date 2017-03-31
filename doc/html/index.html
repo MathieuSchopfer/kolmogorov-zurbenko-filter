@@ -254,13 +254,19 @@ z^4P(z)^2 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 
 <li><strong>nu</strong> (<em>list-like</em>) &#8211; Frequencies, length <cite>Nnu</cite>.</li>
 <li><strong>m</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) &#8211; Filter window width.</li>
 <li><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) &#8211; Filter degree.</li>
-<li><strong>t</strong> (<em>list-like</em>) &#8211; Indices where to calculate the KZFT, of length <cite>Nt</cite>. If <cite>None</cite>, calculate over the whole
-calculable range.</li>
+<li><strong>t</strong> (<em>list-like</em>) &#8211; Calculation indices, of length <cite>Nt</cite>. If provided, KZFT filter will be calculated only for values
+<code class="docutils literal"><span class="pre">data[t]</span></code>. Note that the KZFT filter can only be calculated for indices in the range [k(m-1)/2, (N-1)-k(m-1)/2].
+Trying to calculate the KZFT out of this range will raise an <cite>IndexError</cite>. <cite>None</cite>, calculation will happen over
+the whole calculable range.</li>
 <li><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) &#8211; Time step, if not 1.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></a> of shape <cite>(Nnu, Nt)</cite> or <cite>(Nnu, N-k*(m-1))</cite> if <cite>t</cite> is <cite>None</cite>.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></a> of shape <cite>(Nnu, Nt)</cite> or <cite>(Nnu, N-k(m-1))</cite> if <cite>t</cite> is <cite>None</cite>.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IndexError" title="(in Python v3.6)"><strong>IndexError</strong></a> &#8211; If <cite>t</cite> contains one or more indices out of the calculation range. See documentation of keyword
+argument <cite>t</cite>.</p>
 </td>
 </tr>
 </tbody>
